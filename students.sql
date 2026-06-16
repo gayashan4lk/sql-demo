@@ -16,4 +16,5 @@ INSERT INTO student (name, email, date_of_birth, gender) VALUES
     ('Grace Taylor',    'grace.taylor@email.com',     '2003-06-03', 'Female'),
     ('Henry Brown',     'henry.brown@email.com',      '1998-12-17', 'Male'),
     ('Isla Anderson',   'isla.anderson@email.com',    '2002-04-29', 'Female'),
-    ('James Thomas',    'james.thomas@email.com',     '2001-08-11', 'Male');
+    ('James Thomas',    'james.thomas@email.com',     '2001-08-11', 'Male'),
+    ('Harry Potter', 'harry.potter@email.com', '1990-02-22', 'Male');

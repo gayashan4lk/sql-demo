@@ -27,7 +27,7 @@ A structured, hands-on SQL learning repository. Each topic builds on the previou
 - [x] 02 — [Updatable Views](02-updatable-views/lesson.md)
 - [x] 03 — [Stored Procedures](03-stored-procedures/lesson.md)
 - [x] 04 — [Triggers](04-triggers/lesson.md)
-- [ ] 05 — Indexing
+- [x] 05 — [Indexing](05-indexing/lesson.md)
 - [ ] 06 — Transaction Processing
 - [ ] 07 — Concurrency Control
 

@@ -29,7 +29,7 @@ A structured, hands-on SQL learning repository. Each topic builds on the previou
 - [x] 04 — [Triggers](04-triggers/lesson.md)
 - [x] 05 — [Indexing](05-indexing/lesson.md)
 - [x] 06 — [Transaction Processing](06-transactions/lesson.md)
-- [ ] 07 — Concurrency Control
+- [x] 07 — [Concurrency Control](07-concurrency/lesson.md)
 
 ## Schema Overview
 

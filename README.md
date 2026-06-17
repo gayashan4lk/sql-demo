@@ -14,7 +14,7 @@ A structured, hands-on SQL learning repository. Each topic builds on the previou
 ## How to Use
 
 1. Run `schema/reset.sql` to create all tables with seed data (or run individual schema files in order)
-2. Work through lessons in numbered order
+2. Work through lessons in numbered order, starting at `00 — Joins`
 3. Each folder contains:
    - **lesson.md** — Read the concepts and examples
    - **lesson.sql** — Run the examples in your MySQL client
@@ -23,6 +23,7 @@ A structured, hands-on SQL learning repository. Each topic builds on the previou
 
 ## Topic Map
 
+- [x] 00 — [Joins](00-joins/lesson.md)
 - [x] 01 — [Views](01-views/lesson.md)
 - [x] 02 — [Updatable Views](02-updatable-views/lesson.md)
 - [x] 03 — [Stored Procedures](03-stored-procedures/lesson.md)

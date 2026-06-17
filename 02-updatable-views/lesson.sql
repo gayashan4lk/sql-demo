@@ -1,4 +1,10 @@
--- 1. Setup — Create an Updatable View
+-- ============================================================
+-- SQL UPDATABLE VIEWS LESSON
+-- Run schema/01_student.sql first if you haven't already.
+-- ============================================================
+
+
+-- == 1. CREATE AN UPDATABLE VIEW ==
 
 CREATE VIEW student_emails AS
 SELECT student_id, name, email
@@ -6,26 +12,33 @@ FROM student;
 
 SELECT * FROM student_emails;
 
--- 2. UPDATE Through a View
+
+-- == 2. UPDATE THROUGH A VIEW ==
+
 UPDATE student_emails
-SET email='alice.new@email.com'
+SET email = 'alice.new@email.com'
 WHERE student_id = 1;
 
-SELECT * FROM student WHERE student_id=1;
-
--- 3. DELETE Through a View
-DELETE FROM student_emails 
-WHERE student_id = 1;
-
--- Verify the row is gone from the base table
 SELECT * FROM student WHERE student_id = 1;
 
--- 4. INSERT Through a View
-INSERT INTO student_emails (name, email)
-VALUES ('Test Student', 'teststudent@email.com');
+
+-- == 3. DELETE THROUGH A VIEW ==
+
+DELETE FROM student_emails
+WHERE student_id = 1;
+
+SELECT * FROM student WHERE student_id = 1;
+
+
+-- == 4. INSERT THROUGH A VIEW ==
 -- This will FAIL because date_of_birth and gender are NOT NULL with no default
 
--- 5. WITH CHECK OPTION
+INSERT INTO student_emails (name, email)
+VALUES ('Test Student', 'teststudent@email.com');
+
+
+-- == 5. WITH CHECK OPTION ==
+
 -- Without CHECK OPTION (dangerous)
 CREATE VIEW female_students_unsafe AS
 SELECT student_id, name, gender
@@ -51,7 +64,8 @@ UPDATE female_students_safe
 SET gender = 'Male'
 WHERE student_id = 9;
 
--- 6. Non-Updatable View — Contrast
+
+-- == 6. NON-UPDATABLE VIEW — CONTRAST ==
 
 CREATE VIEW gender_count AS
 SELECT gender, COUNT(*) AS total

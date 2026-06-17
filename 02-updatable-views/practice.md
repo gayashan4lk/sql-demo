@@ -1,16 +1,19 @@
 # SQL Updatable Views — Practice Problems
 
+> **Setup:** Make sure you have run `schema/01_student.sql` (or `schema/reset.sql`) before starting.
+
 Use your `student` table to solve each problem. Try writing the SQL yourself before checking the hint or solution.
 
 ---
 
 ## Problem 1 — UPDATE Through a View (Easy)
 
-Create an updatable view called `student_names` that shows `student_id`, `name`, and `gender` from the `student` table.
+Create an updatable view called `student_names` that shows `student_id`, `name`, and `gender` from the `student` table. Then use the view to update the name of the student with `student_id = 2` to `'Robert Smith'`.
 
-Then use the view to **update the name** of the student with `student_id = 2` to `'Robert Smith'`.
-
-Finally, verify the change by querying the base `student` table directly.
+**Your task:**
+1. Create the view
+2. Update the name through the view
+3. Verify the change by querying the base `student` table directly
 
 **Expected:** The name change should be visible in both the view and the base table.
 
@@ -37,17 +40,20 @@ WHERE student_id = 2;
 SELECT * FROM student WHERE student_id = 2;
 ```
 
+**What you practiced:** Updating data through an updatable view and confirming the change flows to the base table.
+
 </details>
 
 ---
 
 ## Problem 2 — DELETE Through a View (Easy)
 
-Create an updatable view called `male_students_view` that shows `student_id`, `name`, and `date_of_birth` for all male students.
+Create an updatable view called `male_students_view` that shows `student_id`, `name`, and `date_of_birth` for all male students. Then use the view to delete the student with `student_id = 4`.
 
-Then use the view to **delete the student with `student_id = 4`**.
-
-Verify the row is gone from both the view and the base `student` table.
+**Your task:**
+1. Create the view with a `WHERE` filter for male students
+2. Delete the student through the view
+3. Verify the row is gone from both the view and the base table
 
 **Expected:** The student should no longer appear in either the view or the base table.
 
@@ -77,6 +83,8 @@ SELECT * FROM male_students_view;
 SELECT * FROM student WHERE student_id = 4;
 ```
 
+**What you practiced:** Deleting through a filtered updatable view and understanding that the row is removed from the base table entirely.
+
 </details>
 
 ---
@@ -85,9 +93,10 @@ SELECT * FROM student WHERE student_id = 4;
 
 Create a view called `young_students` that shows `student_id`, `name`, and `date_of_birth` for students born **after 2000-01-01**, with `WITH CHECK OPTION` enabled.
 
-**Part A:** Try to `UPDATE` a student's `date_of_birth` through the view to `'1995-05-01'` (a date that would take them outside the view's filter). Observe what happens.
-
-**Part B:** Now do a valid `UPDATE` — change a student's `date_of_birth` to `'2001-06-15'` (still within the filter). Confirm it succeeds.
+**Your task:**
+1. Create the view with `WITH CHECK OPTION`
+2. **Part A:** Try to update a student's `date_of_birth` to `'1995-05-01'` (outside the filter) — observe the error
+3. **Part B:** Update a student's `date_of_birth` to `'2001-06-15'` (still within the filter) — confirm it succeeds
 
 **Expected:** Part A should fail with a CHECK OPTION error. Part B should succeed.
 
@@ -123,6 +132,8 @@ WHERE student_id = 1;
 
 SELECT * FROM young_students;
 ```
+
+**What you practiced:** Using `WITH CHECK OPTION` to enforce that updates stay within the view's filter.
 
 </details>
 
@@ -177,6 +188,88 @@ UPDATE view_b SET total = 5 WHERE gender = 'Male';    -- ERROR
 UPDATE view_c SET gender = 'Other' WHERE gender = 'Male'; -- ERROR
 ```
 
+**What you practiced:** Applying the updatability rules by inspecting SQL definitions — a skill you will use when designing views in production.
+
+</details>
+
+---
+
+## Problem 5 — Competing Date-Range Views (Hard)
+
+Create two views over the student table, each with `WITH CHECK OPTION`:
+
+- `pre_2001_students` — shows `student_id`, `name`, `date_of_birth` for students born **on or before 2000-12-31**
+- `post_2000_students` — shows `student_id`, `name`, `date_of_birth` for students born **after 2000-12-31**
+
+**Your task:**
+1. Create both views with `WITH CHECK OPTION`
+2. Pick a student from `post_2000_students` and try to update their `date_of_birth` to `'1999-06-01'` through that view — observe what happens
+3. Now update the same student's `date_of_birth` directly on the base `student` table to `'1999-06-01'` — does it succeed?
+4. Check both views — which view does the student appear in now?
+
+**Expected:** The update through the view should fail (CHECK OPTION). The direct update on the base table should succeed, moving the student from one view to the other.
+
+<details>
+<summary>Hint</summary>
+
+`WITH CHECK OPTION` only enforces the WHERE clause when you write through **that specific view**. Direct writes to the base table bypass all view checks.
+
+</details>
+
+<details>
+<summary>Solution</summary>
+
+```sql
+CREATE VIEW pre_2001_students AS
+SELECT student_id, name, date_of_birth
+FROM student
+WHERE date_of_birth <= '2000-12-31'
+WITH CHECK OPTION;
+
+CREATE VIEW post_2000_students AS
+SELECT student_id, name, date_of_birth
+FROM student
+WHERE date_of_birth > '2000-12-31'
+WITH CHECK OPTION;
+
+-- See who is in each view
+SELECT * FROM pre_2001_students;
+SELECT * FROM post_2000_students;
+
+-- Step 2: This will FAIL — moving the student outside the view's filter
+UPDATE post_2000_students
+SET date_of_birth = '1999-06-01'
+WHERE student_id = 1;
+
+-- Step 3: This SUCCEEDS — base table has no CHECK OPTION
+UPDATE student
+SET date_of_birth = '1999-06-01'
+WHERE student_id = 1;
+
+-- Step 4: The student moved from one view to the other
+SELECT * FROM post_2000_students;  -- student_id 1 is gone
+SELECT * FROM pre_2001_students;   -- student_id 1 appears here now
+```
+
+**What you practiced:** Understanding that `WITH CHECK OPTION` only protects writes through the view itself — direct base table writes are unrestricted.
+
+</details>
+
+---
+
+## Bonus: Explain It
+
+*No SQL to write — answer in your own words.*
+
+A view is defined as `SELECT student_id, name FROM student WHERE gender = 'Female'` **without** `WITH CHECK OPTION`. You insert a row through this view: `INSERT INTO <view> (student_id, name) VALUES (99, 'Test')`. Assume `student_id` is not auto-increment for this scenario and `gender` has a default value of `'Male'`.
+
+Does the insert succeed? Where does the new row end up? Can you see it through the view?
+
+<details>
+<summary>Answer</summary>
+
+The insert succeeds because the view is updatable (simple SELECT from one table). The new row is inserted into the `student` base table with `gender = 'Male'` (the default). However, since the view filters on `gender = 'Female'`, the new row is **not visible** through the view — it slipped outside the view's scope. This is exactly the kind of silent mismatch that `WITH CHECK OPTION` prevents.
+
 </details>
 
 ---
@@ -192,4 +285,6 @@ DROP VIEW IF EXISTS young_students;
 DROP VIEW IF EXISTS view_a;
 DROP VIEW IF EXISTS view_b;
 DROP VIEW IF EXISTS view_c;
+DROP VIEW IF EXISTS pre_2001_students;
+DROP VIEW IF EXISTS post_2000_students;
 ```

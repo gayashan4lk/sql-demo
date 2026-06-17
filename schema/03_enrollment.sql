@@ -1,0 +1,36 @@
+CREATE TABLE enrollment (
+    enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    course_id INT NOT NULL,
+    enrolled_date DATE NOT NULL DEFAULT (CURDATE()),
+    status ENUM('Active', 'Dropped', 'Completed') NOT NULL DEFAULT 'Active',
+    FOREIGN KEY (student_id) REFERENCES student(student_id),
+    FOREIGN KEY (course_id) REFERENCES course(course_id),
+    UNIQUE (student_id, course_id)
+);
+
+INSERT INTO enrollment (student_id, course_id, enrolled_date, status) VALUES
+    (1, 1, '2025-09-01', 'Completed'),
+    (1, 4, '2025-09-01', 'Completed'),
+    (1, 6, '2025-09-01', 'Completed'),
+    (2, 1, '2025-09-01', 'Completed'),
+    (2, 2, '2025-09-01', 'Completed'),
+    (3, 1, '2025-09-01', 'Active'),
+    (3, 6, '2025-09-01', 'Active'),
+    (4, 4, '2025-09-01', 'Completed'),
+    (4, 8, '2025-09-01', 'Completed'),
+    (5, 1, '2025-09-01', 'Active'),
+    (5, 3, '2025-09-01', 'Active'),
+    (5, 7, '2025-09-01', 'Active'),
+    (6, 2, '2025-09-01', 'Completed'),
+    (6, 5, '2025-09-01', 'Completed'),
+    (7, 1, '2025-09-01', 'Active'),
+    (7, 6, '2025-09-01', 'Active'),
+    (8, 3, '2025-09-01', 'Completed'),
+    (8, 8, '2025-09-01', 'Dropped'),
+    (9, 4, '2025-09-01', 'Active'),
+    (9, 7, '2025-09-01', 'Active'),
+    (10, 1, '2025-09-01', 'Active'),
+    (10, 5, '2025-09-01', 'Active'),
+    (11, 9, '2025-09-01', 'Active'),
+    (11, 3, '2025-09-01', 'Active');

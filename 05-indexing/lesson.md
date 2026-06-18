@@ -59,6 +59,17 @@ EXPLAIN SELECT * FROM student WHERE name = 'Grace Taylor';
 +----+-------------+---------+------+---------------+------+---------+------+------+-------------+
 ```
 
+> **Seeing a tree instead of a table?** On MySQL 8.0.18+ (incl. 9.x) some clients
+> render `EXPLAIN` in *tree* format — e.g. `-> Table scan on student (rows=11)`
+> with a `-> Filter:` node above it. That's the **same plan**, just drawn
+> bottom-up: `Table scan` ≙ `type: ALL` with `key: NULL` (a full scan), and the
+> `Filter:` node ≙ `Extra: Using where`. To get the exact table shown here, ask
+> for it explicitly:
+>
+> ```sql
+> EXPLAIN FORMAT=TRADITIONAL SELECT * FROM student WHERE name = 'Grace Taylor';
+> ```
+
 The columns that matter:
 
 | Column | What it tells you |
@@ -268,6 +279,7 @@ Indexes are not free: every `INSERT`, `UPDATE`, and `DELETE` must also update ea
 |---|---|
 | `EXPLAIN SELECT ...` | Show the query plan (no rows returned) |
 | `EXPLAIN FORMAT=JSON SELECT ...` | A detailed plan with cost estimates |
+| `EXPLAIN FORMAT=TRADITIONAL SELECT ...` | Force the classic table layout (vs. tree on MySQL 9.x) |
 | `CREATE INDEX idx_t_col ON t(col)` | Add a single-column index |
 | `CREATE INDEX idx_t_a_b ON t(a, b)` | Add a composite index (order matters) |
 | `CREATE UNIQUE INDEX idx_t_col ON t(col)` | Add an index that also enforces uniqueness |
